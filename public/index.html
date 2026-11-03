@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grievance Drafter</title>
+<style>
+:root{--bg:#fbfbf8;--fg:#0f0f0e;--mut:#62625c;--line:#e2e2db;--btn:#0f0f0e;--btnfg:#fff;--ok:#17703f;--warn:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#0d0d0c;--fg:#f4f4f0;--mut:#a3a39b;--line:#2a2a27;--btn:#f4f4f0;--btnfg:#0d0d0c;--ok:#5fcf8f;--warn:#ff8a7e}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:20px/1.55 "Inter",system-ui,-apple-system,"Segoe UI","Noto Sans","Noto Sans Devanagari",sans-serif}
+nav{display:flex;justify-content:space-between;align-items:center;max-width:960px;margin:0 auto;padding:20px 24px;border-bottom:1px solid var(--line)}
+nav b{font-size:20px;font-weight:600;letter-spacing:-.01em}nav span{color:var(--mut);font-size:16px}
+main{max-width:720px;margin:0 auto;padding:48px 24px 96px}
+h1{font-size:clamp(34px,7vw,56px);line-height:1.08;font-weight:500;letter-spacing:-.025em;margin:0 0 16px}
+.lead{color:var(--mut);margin:0 0 40px;font-size:22px}
+.q{font-size:clamp(26px,5vw,36px);line-height:1.25;font-weight:500;letter-spacing:-.015em;margin:0 0 20px}
+section{margin:0}.hide{display:none!important}.mut{color:var(--mut)}.warn{color:var(--warn)}.ok{color:var(--ok)}
+label{display:block;font-size:16px;color:var(--mut);margin:24px 0 0}
+input,select,textarea{display:block;width:100%;font:inherit;color:var(--fg);background:transparent;border:1.5px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:8px;min-height:60px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--fg);outline-offset:1px;border-color:var(--fg)}
+textarea{resize:vertical}
+button{font:inherit;font-weight:500;min-height:64px;padding:0 28px;border-radius:999px;border:1.5px solid var(--fg);background:transparent;color:var(--fg);cursor:pointer;width:100%;margin-top:14px}
+button:hover{background:var(--line)}button.p{background:var(--btn);color:var(--btnfg);border-color:var(--btn)}button.p:hover{opacity:.88}
+button.rec{background:var(--warn);color:#fff;border-color:var(--warn)}button:disabled{opacity:.45;cursor:default}
+button:focus-visible{outline:3px solid var(--fg);outline-offset:3px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.row button{margin-top:14px}@media(max-width:520px){.row{grid-template-columns:1fr}}
+label.c{display:flex;gap:16px;align-items:flex-start;color:var(--fg);font-size:18px;margin-top:28px}
+label.c input{width:28px;height:28px;min-height:0;margin:2px 0 0;flex:none;accent-color:var(--fg)}
+#notice{margin-top:28px;padding:20px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:18px}
+.sec{padding:24px 0;border-top:1px solid var(--line)}.sec h3{margin:0 0 6px;font-size:15px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--mut)}
+pre{white-space:pre-wrap;font:inherit;margin:0}.card{padding:18px 0}
+#err{border-left:4px solid var(--warn);padding:12px 16px;margin:0 0 28px;font-size:18px}
+hr{border:0;border-top:1px solid var(--line);margin:40px 0}
+a{color:var(--fg)}audio{width:100%;margin:8px 0 4px}
+.steps{display:flex;gap:6px;margin:0 0 36px}.steps i{height:4px;flex:1;background:var(--line);border-radius:2px}.steps i.on{background:var(--fg)}
+</style></head><body>
+<nav><b>Grievance Drafter</b><span id="stepname">Start</span></nav>
+<main>
+<div class="steps"><i id="p1" class="on"></i><i id="p2"></i><i id="p3"></i><i id="p4"></i></div>
+<div id="err" class="warn hide"></div>
+
+<section id="s0">
+ <h1>Say it in your language. We write the complaint.</h1>
+ <p class="lead">For government services in India. Free to use. Works with voice.</p>
+ <label>Language for this notice (after this, we follow the language you speak)<select id="lang"></select></label>
+ <label>Mobile number<input id="phone" inputmode="numeric" maxlength="10" placeholder="10-digit number"></label>
+ <label id="vl" class="hide">Language for spoken replies (we cannot speak yours yet)<select id="voicelang"></select></label>
+ <div id="notice" class="mut"></div>
+ <button id="playn" class="hide">Listen to this notice</button>
+ <label class="c"><input type="checkbox" id="consent"><span>I agree to this, for drafting my complaint, saving it, and sending me reminders.</span></label>
+ <button class="p" id="start">Start</button>
+</section>
+
+<section id="s1" class="hide">
+ <h1>What happened?</h1>
+ <p class="lead">Press Record and tell us in your own words. Or type it.</p>
+ <button class="p" id="rec1">Record</button>
+ <label>Or type here<textarea id="txt1" rows="4"></textarea></label>
+ <button id="send1">Send</button>
+</section>
+
+<section id="s2" class="hide">
+ <p class="mut" id="qcount" style="margin:0 0 12px;font-size:16px"></p>
+ <div id="qtxt" class="q"></div>
+ <audio id="qaudio" controls class="hide"></audio>
+ <button class="p" id="rec2">Record answer</button>
+ <label>Or type your answer<textarea id="txt2" rows="3"></textarea></label>
+ <div class="row"><button id="send2">Send answer</button><button id="skip">Skip</button></div>
+</section>
+
+<section id="s3" class="hide">
+ <h1>Check your complaint.</h1>
+ <p class="lead">Listen or read each part. Press "This is correct" on each one.</p>
+ <div id="routebox" class="hide"><div class="q">Which office fits best?</div><div id="routeopts"></div></div>
+ <div id="secs"></div>
+ <div id="fixbox" class="sec hide"><h3>Something wrong?</h3>
+  <button id="rec3">Record a correction</button>
+  <textarea id="txt3" rows="2" placeholder="Or type the correction"></textarea><button id="send3">Apply correction</button></div>
+ <button class="p" id="confirmall" style="margin-top:32px">Everything is correct</button>
+</section>
+
+<section id="s4" class="hide">
+ <h1 class="ok">Your complaint is ready.</h1>
+ <p class="lead">File it at <a href="https://pgportal.gov.in" target="_blank" rel="noopener">pgportal.gov.in</a> or in the CPGRAMS app. Paste the text below.</p>
+ <div class="row"><button class="p" id="dlpdf">Download PDF</button><button id="dlhtml">Print, all languages</button></div>
+ <hr><pre id="packet"></pre><button id="copy">Copy English text</button>
+ <hr><div class="q">After you file</div>
+ <label>Registration number from CPGRAMS<input id="regno"></label>
+ <button class="p" id="savereg">Save and track</button>
+ <div id="track" class="mut" style="margin-top:20px"></div>
+</section>
+</main>
+<script>
+const LANGS={"hi-IN":"Hindi","bn-IN":"Bengali","ta-IN":"Tamil","te-IN":"Telugu","gu-IN":"Gujarati","kn-IN":"Kannada","ml-IN":"Malayalam","mr-IN":"Marathi","pa-IN":"Punjabi","od-IN":"Odia","en-IN":"English","as-IN":"Assamese","ur-IN":"Urdu","ne-IN":"Nepali","kok-IN":"Konkani","ks-IN":"Kashmiri","sd-IN":"Sindhi","sa-IN":"Sanskrit","sat-IN":"Santali","mni-IN":"Manipuri","brx-IN":"Bodo","mai-IN":"Maithili","doi-IN":"Dogri"};
+const VOICE=["hi-IN","bn-IN","ta-IN","te-IN","gu-IN","kn-IN","ml-IN","mr-IN","pa-IN","od-IN","en-IN"];
+const $=id=>document.getElementById(id);let S={token:null,cid:null,case:null,lang:null,confirmed:[]};
+for(const[k,v] of Object.entries(LANGS)){$("lang").add(new Option(v,k));if(VOICE.includes(k))$("voicelang").add(new Option(v,k))}
+const STEP={s0:[1,"Start"],s1:[1,"Step 1 of 4"],s2:[2,"Step 2 of 4"],s3:[3,"Step 3 of 4"],s4:[4,"Step 4 of 4"]};
+const show=id=>{["s0","s1","s2","s3","s4"].forEach(s=>$(s).classList.toggle("hide",s!==id));
+  const[n,t]=STEP[id];$("stepname").textContent=t;for(let i=1;i<=4;i++)$("p"+i).classList.toggle("on",i<=n);window.scrollTo(0,0)};
+const err=m=>{$("err").textContent=m;$("err").classList.toggle("hide",!m)};
+const H=()=>({"X-Citizen-Token":S.token});
+async function api(path,opt={}){opt.headers={...H(),...(opt.headers||{})};const r=await fetch(path,opt);
+  if(!r.ok){let d="";try{d=(await r.json()).detail}catch{}throw new Error(d||r.statusText)}return r}
+const jpost=(p,b)=>api(p,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(r=>r.json());
+const play=b64=>{if(b64)new Audio("data:audio/wav;base64,"+b64).play().catch(()=>{})};
+async function busy(btn,fn){btn.disabled=true;err("");try{await fn()}catch(e){err(e.message)}finally{btn.disabled=false}}
+
+let nb64=null;
+async function loadNotice(){const l=$("lang").value;$("vl").classList.toggle("hide",VOICE.includes(l));
+  try{const n=await (await fetch("/consents/notice?lang="+l)).json();$("notice").textContent=n.text;nb64=n.audio_b64;$("playn").classList.toggle("hide",!nb64)}catch(e){}}
+$("lang").onchange=loadNotice;loadNotice();$("playn").onclick=()=>play(nb64);
+
+$("start").onclick=()=>busy($("start"),async()=>{
+  if(!$("consent").checked)throw new Error("Please tick the box to agree.");
+  if(!/^[6-9]\d{9}$/.test($("phone").value))throw new Error("Enter a valid 10-digit mobile number.");
+  S.lang=$("lang").value;
+  const c=await (await fetch("/consents",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({phone:$("phone").value,user_lang:S.lang,voice_lang:VOICE.includes(S.lang)?null:$("voicelang").value,purposes:["drafting","storage","reminders"]})})).json();
+  S.token=c.token;S.cid=c.citizen_id;S.case=(await jpost("/cases",{citizen_id:S.cid})).case_id;show("s1")});
+
+function recorder(btn,onDone){let mr=null,chunks=[];btn.onclick=async()=>{
+  if(mr){mr.stop();return}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});mr=new MediaRecorder(st);chunks=[];
+   mr.ondataavailable=e=>chunks.push(e.data);
+   mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());btn.textContent=btn.dataset.l;btn.classList.remove("rec");const blob=new Blob(chunks,{type:mr.mimeType});mr=null;onDone(blob)};
+   btn.dataset.l=btn.textContent;btn.textContent="Stop recording";btn.classList.add("rec");mr.start()}catch(e){err("Microphone not available. Please type instead.")}}}
+
+async function afterNarrative(r){const j=await r.json();
+  if(j.status==="emergency"||j.status==="out_of_scope"){show("s1");err(j.screen.message||"We cannot help with this here.");return}
+  nextQ()}
+recorder($("rec1"),blob=>busy($("rec1"),async()=>{const f=new FormData();f.append("file",blob,"voice.webm");afterNarrative(await api(`/cases/${S.case}/audio`,{method:"POST",body:f}))}));
+$("send1").onclick=()=>busy($("send1"),async()=>{if(!$("txt1").value.trim())throw new Error("Please type or record first.");afterNarrative(await api(`/cases/${S.case}/text`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:$("txt1").value})}))});
+
+async function nextQ(){const q=await (await api(`/cases/${S.case}/next-question`)).json();
+  if(q.done){if(q.status==="emergency"||q.status==="out_of_scope"){err("We cannot continue with this case.");return}return draft()}
+  show("s2");$("qtxt").textContent=q.question;$("qcount").textContent=`Question ${q.questions_asked+1} of at most ${q.max_questions}`;
+  $("txt2").value="";if(q.audio_b64){$("qaudio").src="data:audio/wav;base64,"+q.audio_b64;$("qaudio").classList.remove("hide");$("qaudio").play().catch(()=>{})}else $("qaudio").classList.add("hide")}
+async function answer(fd){await api(`/cases/${S.case}/answers`,{method:"POST",body:fd});nextQ()}
+recorder($("rec2"),blob=>busy($("rec2"),async()=>{const f=new FormData();f.append("file",blob,"voice.webm");await answer(f)}));
+$("send2").onclick=()=>busy($("send2"),async()=>{const f=new FormData();if(!$("txt2").value.trim())throw new Error("Type, record, or press Skip.");f.append("text",$("txt2").value);await answer(f)});
+$("skip").onclick=()=>busy($("skip"),async()=>{const f=new FormData();f.append("skip","true");await answer(f)});
+
+async function draft(routeId){show("s3");$("secs").innerHTML='<div class="card mut">Preparing your complaint…</div>';
+  const j=await jpost(`/cases/${S.case}/draft`,routeId?{route_id:routeId}:{});
+  if(j.needs_route_choice){$("routebox").classList.remove("hide");$("routeopts").innerHTML="";
+    j.options.forEach(o=>{const b=document.createElement("button");b.textContent=`${o.department}: ${o.category}`;b.onclick=()=>busy(b,()=>draft(o.id));$("routeopts").append(b)});$("secs").innerHTML="";return}
+  $("routebox").classList.add("hide");S.confirmed=[];$("fixbox").classList.remove("hide");
+  $("secs").innerHTML="";const w=j.draft.warnings||[];
+  if(w.length){const d=document.createElement("div");d.className="sec warn";d.textContent="Please check: "+w.join("; ");$("secs").append(d)}
+  j.readback.forEach(r=>{const d=document.createElement("div");d.className="sec";d.innerHTML=`<h3></h3><pre></pre><div class="row"></div>`;
+    d.querySelector("h3").textContent=r.label;d.querySelector("pre").textContent=r.text;const row=d.querySelector(".row");
+    if(r.audio_b64){const p=document.createElement("button");p.textContent="Listen";p.onclick=()=>play(r.audio_b64);row.append(p)}
+    const c=document.createElement("button");c.textContent="This is correct";c.onclick=()=>busy(c,async()=>{await jpost(`/cases/${S.case}/confirm`,{sections:[r.key]});c.textContent="Confirmed";c.classList.add("p");c.disabled=true});row.append(c);$("secs").append(d)})}
+recorder($("rec3"),blob=>busy($("rec3"),async()=>{const f=new FormData();f.append("file",blob,"voice.webm");f.append("correction","true");await api(`/cases/${S.case}/answers`,{method:"POST",body:f});draft()}));
+$("send3").onclick=()=>busy($("send3"),async()=>{if(!$("txt3").value.trim())throw new Error("Type the correction first.");const f=new FormData();f.append("text",$("txt3").value);f.append("correction","true");await api(`/cases/${S.case}/answers`,{method:"POST",body:f});$("txt3").value="";draft()});
+$("confirmall").onclick=()=>busy($("confirmall"),async()=>{await jpost(`/cases/${S.case}/confirm`,{sections:"all"});const p=await (await api(`/cases/${S.case}/packet`)).json();
+  $("packet").textContent=p.text_en;show("s4")});
+
+const dl=async(fmt,name)=>{const b=await (await api(`/cases/${S.case}/packet?format=${fmt}`)).blob();const u=URL.createObjectURL(b);if(fmt==="html")window.open(u);else{const a=document.createElement("a");a.href=u;a.download=name;a.click()}};
+$("dlpdf").onclick=()=>busy($("dlpdf"),()=>dl("pdf","grievance.pdf"));$("dlhtml").onclick=()=>busy($("dlhtml"),()=>dl("html"));
+$("copy").onclick=()=>navigator.clipboard.writeText($("packet").textContent);
+$("savereg").onclick=()=>busy($("savereg"),async()=>{if(!$("regno").value.trim())throw new Error("Enter the registration number.");
+  const t=await jpost(`/cases/${S.case}/submission`,{registration_no:$("regno").value.trim()});
+  $("track").innerHTML=`Registered <b></b>. Reply due by <b>${t.day21.slice(0,10)}</b> (${t.days_left} days left). Reminders: day 7 on ${t.day7.slice(0,10)}, day 21 on ${t.day21.slice(0,10)}.`;
+  $("track").querySelector("b").textContent=t.registration_no});
+</script></body></html>

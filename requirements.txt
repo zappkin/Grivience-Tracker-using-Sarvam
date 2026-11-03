@@ -1,0 +1,7 @@
+sarvamai
+fastapi
+uvicorn[standard]
+sqlalchemy
+python-multipart
+fpdf2
+psycopg[binary]
